@@ -25,6 +25,10 @@ If you desire to configure test *name*, *description* and *tags*:
 
 Extend *ReportPortalListener*, override *getTestItem()* and replace *com.epam.reportportal.junit5.ReportPortalListener*
 with fully qualified custom Listener class name in this file.
+
+## Disabled tests reporting
+By default reporting of @Disabled tests is switched off. To switch it on - add -PreportDisabledTests=true to an execution goal.
+
 ### Maven
 
 ```xml
