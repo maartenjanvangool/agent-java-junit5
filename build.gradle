@@ -34,8 +34,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    systemProperty 'reportDisabledTests', reportDisabledTests
 
-    systemProperty 'junit.jupiter.extensions.autodetection.enabled', true
 }
 
 task wrapper(type: Wrapper) {

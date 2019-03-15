@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
@@ -36,6 +37,12 @@ class JUnit5Tests {
 	@Tag("tag2")
 	void baseClassTest() {
 		System.out.println("base-class-test");
+	}
+
+    @Test
+	@Disabled("Disabled for demonstration")
+	void disabledTest() {
+		System.out.println("disabled-test");
 	}
 
 	private static List<String> testData() {
