@@ -8,10 +8,23 @@
 ---
 # ReportPortal [JUnit5](https://junit.org/junit5/) Integration
 
-The repository contains [JUnit5 Extension](https://junit.org/junit5/docs/current/user-guide/#extensions) for [ReportPortal](http://reportportal.io/) integration.
+The repository contains JUnit5 Listener for [ReportPortal](http://reportportal.io/) integration.
 
 ## Getting Started
 
+1. Create folders **_/META-INF/services_** in **_resources_**
+2. Put there a file named **_org.junit.platform.launcher.TestExecutionListener_**
+3. Supply a single row **_com.epam.reportportal.junit5.ReportPortalListener_** for default realization
+
+__/META-INF/services/org.junit.platform.launcher.TestExecutionListener__
+```xml
+com.epam.reportportal.junit5.ReportPortalListener
+```
+
+If you desire to configure test *name*, *description* and *tags*:
+
+Extend *ReportPortalListener*, override *getTestItem()* and replace *com.epam.reportportal.junit5.ReportPortalListener*
+with fully qualified custom Listener class name in this file.
 ### Maven
 
 ```xml
@@ -33,26 +46,6 @@ The repository contains [JUnit5 Extension](https://junit.org/junit5/docs/current
 </dependency>
 ```
 
-#### Automatic Extension Registration (optional)
-
-```xml
-<build>
-    <plugins>
-        <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.22.0</version>
-            <configuration>
-                <properties>
-                    <configurationParameters>
-                        junit.jupiter.extensions.autodetection.enabled = true
-                    </configurationParameters>
-                </properties>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
-```
-
 ### Gradle
 
 ```yml
@@ -66,14 +59,6 @@ repositories {
 testCompile 'com.epam.reportportal:agent-java-junit5:$LATEST_VERSION'
 ```
 
-#### Automatic Extension Registration (optional)
-
-```yml
-test {
-    useJUnitPlatform()
-    systemProperty 'junit.jupiter.extensions.autodetection.enabled', true
-}
-```
 
 # Copyright Notice
 
