@@ -27,7 +27,9 @@ Extend *ReportPortalListener*, override *getTestItem()* and replace *com.epam.re
 with fully qualified custom Listener class name in this file.
 
 ## Disabled tests reporting
-By default reporting of @Disabled tests is switched off. To switch it on - add -PreportDisabledTests=true to an execution goal.
+By default reporting of @Disabled tests is switched off. To switch it on - add next parameter to an execution goal:
+- Gradle: -PreportDisabledTests=true 
+- Maven: -DreportDisabledTests=true
 
 ### Maven
 
