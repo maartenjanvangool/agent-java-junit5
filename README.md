@@ -8,7 +8,7 @@
 ---
 # ReportPortal [JUnit5](https://junit.org/junit5/) Integration
 
-The repository contains JUnit5 Listener for [ReportPortal](http://reportportal.io/) integration.
+The repository contains [JUnit5](https://junit.org/junit5/docs/current/user-guide/) Listener for [ReportPortal](http://reportportal.io/) integration.
 
 ## Getting Started
 

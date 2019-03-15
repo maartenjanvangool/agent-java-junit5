@@ -34,8 +34,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    systemProperty 'reportDisabledTests', reportDisabledTests
-
+    if (project.hasProperty('reportDisabledTests')) {
+        systemProperty('reportDisabledTests', reportDisabledTests)
+    }
 }
 
 task wrapper(type: Wrapper) {

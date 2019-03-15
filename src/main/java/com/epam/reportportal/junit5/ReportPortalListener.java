@@ -110,7 +110,7 @@ public class ReportPortalListener implements TestExecutionListener {
         this.idMapping.put(testIdentifier.getUniqueId(), itemId);
     }
 
-    private void finishTestItem(TestIdentifier testIdentifier, TestExecutionResult testExecutionResult) {
+    private synchronized void finishTestItem(TestIdentifier testIdentifier, TestExecutionResult testExecutionResult) {
         FinishTestItemRQ rq = new FinishTestItemRQ();
         if (isDisabledTest.get()) {
             rq.setStatus("SKIPPED");
