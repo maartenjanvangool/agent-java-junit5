@@ -1,3 +1,23 @@
+/*
+ * Copyright 2019 EPAM Systems
+ *
+ *
+ * This file is part of EPAM Report Portal.
+ * https://github.com/reportportal/commons-model
+ *
+ * Report Portal is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Report Portal is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Report Portal.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.epam.reportportal.junit5;
 
 import com.epam.reportportal.listeners.ListenerParameters;
@@ -30,6 +50,8 @@ import static rp.com.google.common.base.Throwables.getStackTraceAsString;
 
 /**
  * ReportPortal Listener sends the results of test execution to ReportPortal in RealTime
+ *
+ * @author <a href="mailto:andrei_varabyeu@epam.com">Andrei Varabyeu</a>
  */
 
 public class ReportPortalListener implements TestExecutionListener {
@@ -87,19 +109,15 @@ public class ReportPortalListener implements TestExecutionListener {
         TestItem testItem = getTestItem(testIdentifier, launch);
         StartTestItemRQ rq = new StartTestItemRQ();
         rq.setStartTime(Calendar.getInstance().getTime());
-
         String name = testItem.name;
         rq.setName(name.length() > 256 ? name.substring(0, 200) + "..." : name);
-
         Set<String> tags = testItem.tags;
         rq.setTags(tags);
-
         if (null != reason) {
             rq.setDescription(reason);
         } else {
             rq.setDescription(testItem.description);
         }
-
         rq.setUniqueId(testIdentifier.getUniqueId());
         rq.setType(testIdentifier.isContainer() ? "SUITE" : "STEP");
         rq.setRetry(false);

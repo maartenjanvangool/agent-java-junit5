@@ -26,11 +26,6 @@ If you desire to configure test *name*, *description* and *tags*:
 Extend *ReportPortalListener*, override *getTestItem()* and replace *com.epam.reportportal.junit5.ReportPortalListener*
 with fully qualified custom Listener class name in this file.
 
-## Disabled tests reporting
-By default reporting of @Disabled tests is switched off. To switch it on - add next parameter to an execution goal:
-- Gradle: -PreportDisabledTests=true 
-- Maven: -DreportDisabledTests=true
-
 ### Maven
 
 ```xml
@@ -65,6 +60,10 @@ repositories {
 testCompile 'com.epam.reportportal:agent-java-junit5:$LATEST_VERSION'
 ```
 
+## Disabled tests reporting
+By default reporting of @Disabled tests is switched off. To switch it on - add next parameter to an execution goal:
+- Maven: -DreportDisabledTests=true
+- Gradle: -PreportDisabledTests=true 
 
 # Copyright Notice
 
