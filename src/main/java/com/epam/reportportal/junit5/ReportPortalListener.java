@@ -35,7 +35,6 @@ import org.junit.platform.engine.TestTag;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
-import org.opentest4j.TestAbortedException;
 
 import java.util.Calendar;
 import java.util.Optional;
@@ -140,14 +139,11 @@ public class ReportPortalListener implements TestExecutionListener {
     }
 
     private static String getExecutionStatus(TestExecutionResult testExecutionResult) {
-        Optional<Throwable> exception = Optional.of(testExecutionResult.getThrowable()).orElse(null);
-        if (!exception.isPresent()) {
+        TestExecutionResult.Status status = testExecutionResult.getStatus();
+        if (status.equals(TestExecutionResult.Status.SUCCESSFUL)) {
             return Statuses.PASSED;
-        } else if (exception.get() instanceof TestAbortedException) {
-            sendStackTraceToRP(exception.get());
-            return Statuses.FAILED;
         } else {
-            sendStackTraceToRP(exception.get());
+            sendStackTraceToRP(testExecutionResult.getThrowable().orElse(null));
             return Statuses.FAILED;
         }
     }
