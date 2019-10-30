@@ -47,7 +47,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.jupiter.api.extension.TestWatcher;
-import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static rp.com.google.common.base.Throwables.getStackTraceAsString;
@@ -60,7 +59,7 @@ public class ReportPortalExtension
         implements Extension, BeforeAllCallback, BeforeEachCallback, BeforeTestExecutionCallback,
                    AfterTestExecutionCallback, AfterEachCallback, AfterAllCallback, TestWatcher, InvocationInterceptor {
 
-    private static final String SKIPPED_ISSUE_KEY = "skippedIssue";private static final String TEST_TEMPLATE_EXTENSION_CONTEXT =
+    private static final String TEST_TEMPLATE_EXTENSION_CONTEXT =
             "org.junit.jupiter.engine.descriptor.TestTemplateExtensionContext";
     private static final ConcurrentMap<String, Launch> launchMap = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Maybe<String>> idMapping = new ConcurrentHashMap<>();
@@ -90,7 +89,7 @@ public class ReportPortalExtension
     public void interceptBeforeAllMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
                                          ExtensionContext extensionContext) throws Throwable {
         String parentId = extensionContext.getUniqueId();
-        String uniqueId = startBeforeAfter(invocationContext, extensionContext, parentId, "BEFORE_CLASS");
+        String uniqueId = startBeforeAfter(invocationContext.getExecutable(), extensionContext, parentId, "BEFORE_CLASS");
         finishBeforeAfter(invocation, extensionContext, uniqueId);
     }
 
@@ -98,7 +97,15 @@ public class ReportPortalExtension
     public void interceptBeforeEachMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
                                           ExtensionContext extensionContext) throws Throwable {
         String parentId = extensionContext.getParent().get().getUniqueId();
-        String uniqueId = startBeforeAfter(invocationContext, extensionContext, parentId, "BEFORE_METHOD");
+        String uniqueId = startBeforeAfter(invocationContext.getExecutable(), extensionContext, parentId, "BEFORE_METHOD");
+        finishBeforeAfter(invocation, extensionContext, uniqueId);
+    }
+
+    @Override
+    public void interceptAfterAllMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
+                                        ExtensionContext extensionContext) throws Throwable {
+        String parentId = extensionContext.getUniqueId();
+        String uniqueId = startBeforeAfter(invocationContext.getExecutable(), extensionContext, parentId, "AFTER_CLASS");
         finishBeforeAfter(invocation, extensionContext, uniqueId);
     }
 
@@ -106,15 +113,7 @@ public class ReportPortalExtension
     public void interceptAfterEachMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
                                          ExtensionContext extensionContext) throws Throwable {
         String parentId = extensionContext.getParent().get().getUniqueId();
-        String uniqueId = startBeforeAfter(invocationContext, extensionContext, parentId, "AFTER_METHOD");
-        finishBeforeAfter(invocation, extensionContext, uniqueId);
-    }
-
-    @Override
-    public void interceptAfterAllMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext)
-            throws Throwable {
-        String parentId = extensionContext.getUniqueId();
-        String uniqueId = startBeforeAfter(invocationContext, extensionContext, parentId, "AFTER_CLASS");
+        String uniqueId = startBeforeAfter(invocationContext.getExecutable(), extensionContext, parentId, "AFTER_METHOD");
         finishBeforeAfter(invocation, extensionContext, uniqueId);
     }
 
@@ -160,10 +159,14 @@ public class ReportPortalExtension
         }
     }
 
-    private synchronized String startBeforeAfter(ReflectiveInvocationContext<Method> invocationContext, ExtensionContext context, String parentId,
-                                                 String itemType) {
+    @Override
+    public void testFailed(ExtensionContext context, Throwable throwable) {
+        startTestItem(context, "STEP");
+        finishTestItem(context);
+    }
+
+    private synchronized String startBeforeAfter(Method method, ExtensionContext context, String parentId, String itemType) {
         Launch launch = getLaunch(context);
-        Method method = invocationContext.getExecutable();
         StartTestItemRQ rq = new StartTestItemRQ();
         rq.setStartTime(Calendar.getInstance().getTime());
         rq.setName(method.getName() + "()");
@@ -301,34 +304,34 @@ public class ReportPortalExtension
         });
     }
 
-	protected class TestItem {
+    protected static class TestItem {
 
         private String name;
         private String description;
 		private Set<String> tags;
 
-		public String getName() {
+        String getName() {
             return name;
         }
 
-		public String getDescription() {
+        String getDescription() {
             return description;
         }
 
-		public Set<String> getTags() {
-			return tags;
+        Set<String> getTags() {
+            return tags;
         }
 
         public TestItem(String name, String description, Set<String> tags) {
             this.name = name;
             this.description = description;
-			this.tags = tags;
+            this.tags = tags;
         }
     }
 
     protected TestItem getTestItem(ExtensionContext context) {
         String name = context.getDisplayName();
-		name = name.length() > 256 ? name.substring(0, 200) + "..." : name;
+        name = name.length() > 1024 ? name.substring(0, 1024) + "..." : name;
         String description = context.getDisplayName();
         Set<String> tags = context.getTags();
         return new TestItem(name, description, tags);
